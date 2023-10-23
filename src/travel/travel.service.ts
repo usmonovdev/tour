@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Travel } from './model/app.model';
 import { TravelDto } from './dto/travel.dto';
 import { SearchDto } from './dto/search.dto';
-import { Op } from 'sequelize';
+import { Op, where } from 'sequelize';
 import { v4 } from 'uuid';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
 
@@ -81,7 +81,7 @@ export class TravelService {
 
   async getById(id: string) {
     try {
-      const travel = await this.travelRepo.findByPk(id);
+      const travel = await this.travelRepo.findOne({ where: { id } });
       return travel;
     } catch (error) {
       throw new BadRequestException(error.message);
