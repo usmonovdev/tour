@@ -5,7 +5,7 @@ import { TravelDto } from './dto/travel.dto';
 import { SearchDto } from './dto/search.dto';
 import { Op, where } from 'sequelize';
 import { v4 } from 'uuid';
-import { getStorage, ref, uploadBytes } from 'firebase/storage';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 @Injectable()
 export class TravelService {
@@ -13,17 +13,14 @@ export class TravelService {
     @InjectModel(Travel) private readonly travelRepo: typeof Travel,
   ) {}
 
-  public async upload(
-    file: Express.Multer.File,
-    path: string,
-    fileName: string,
-  ) {
+  public async upload(file: Express.Multer.File, fileName: string) {
     try {
       const storage = getStorage();
       const fileExtension = file.originalname.split('.').pop();
-      const fileRef = ref(storage, `${path}/${fileName}.${fileExtension}`);
+      const fileRef = ref(storage, `${fileName}.${fileExtension}`);
       const uploaded = await uploadBytes(fileRef, file.buffer);
-      return uploaded.metadata.fullPath;
+      const downloadUrl = await getDownloadURL(uploaded.ref);
+      return downloadUrl;
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -61,7 +58,7 @@ export class TravelService {
   async create(travelDto: TravelDto, file: Express.Multer.File) {
     try {
       const exs = v4();
-      const image = await this.upload(file, 'image', exs);
+      const image = await this.upload(file, exs);
       const travel = await this.travelRepo.create({ ...travelDto, image });
       return travel;
     } catch (error) {

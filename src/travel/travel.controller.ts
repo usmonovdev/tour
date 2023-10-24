@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TravelService } from './travel.service';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TravelDto } from './dto/travel.dto';
 import { SearchDto } from './dto/search.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -29,6 +29,48 @@ export class TravelController {
   }
 
   @ApiOperation({ summary: 'add travel package to list' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        from_uz: {
+          type: 'string',
+        },
+        from_ru: {
+          type: 'string',
+        },
+        where_uz: {
+          type: 'string',
+        },
+        where_ru: {
+          type: 'string',
+        },
+        description_uz: {
+          type: 'string',
+        },
+        description_ru: {
+          type: 'string',
+        },
+        fly_date: {
+          type: 'Date',
+        },
+        days: {
+          type: 'number',
+        },
+        price: {
+          type: 'number',
+        },
+        type: {
+          type: 'string',
+        },
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @UseGuards(AuthGuard)
   @Post()
   @UseInterceptors(FileInterceptor('file'))
