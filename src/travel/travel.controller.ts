@@ -13,7 +13,6 @@ import {
 import { TravelService } from './travel.service';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TravelDto } from './dto/travel.dto';
-import { SearchDto } from './dto/search.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from 'src/guard/auth.guard';
 
@@ -23,9 +22,9 @@ export class TravelController {
   constructor(private readonly travelService: TravelService) {}
 
   @ApiOperation({ summary: 'search travel packages' })
-  @Get('search')
-  search(@Body() searchDto: SearchDto) {
-    return this.travelService.search(searchDto);
+  @Get('search/:filtr')
+  search(@Param('filtr') filtr: string) {
+    return this.travelService.search(filtr);
   }
 
   @ApiOperation({ summary: 'add travel package to list' })

@@ -2,8 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Travel } from './model/app.model';
 import { TravelDto } from './dto/travel.dto';
-import { SearchDto } from './dto/search.dto';
-import { Op, where } from 'sequelize';
+import { Op } from 'sequelize';
 import { v4 } from 'uuid';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
@@ -26,27 +25,23 @@ export class TravelService {
     }
   }
 
-  async search(searchDto: SearchDto) {
+  async search(filtr: string) {
     try {
       let travel: any;
-      if (searchDto.fly_date) {
+      const from_uz = filtr.split('-')[0];
+      const where_uz = filtr.split('-')[1];
+      const fly_date = filtr.split('-')[2];
+      if (fly_date) {
         travel = await this.travelRepo.findAll({
           where: {
-            [Op.and]: [
-              { from_uz: searchDto.from_uz },
-              { where_uz: searchDto.where_uz },
-              { fly_date: searchDto.fly_date },
-            ],
+            [Op.and]: [{ from_uz }, { where_uz }, { fly_date }],
           },
         });
         return travel;
       }
       travel = await this.travelRepo.findAll({
         where: {
-          [Op.and]: [
-            { from_uz: searchDto.from_uz },
-            { where_uz: searchDto.where_uz },
-          ],
+          [Op.and]: [{ from_uz }, { where_uz }],
         },
       });
       return travel;
