@@ -80,8 +80,17 @@ export class TravelService {
     }
   }
 
-  async update(id: string, travelDto: TravelDto) {
+  async update(id: string, travelDto: TravelDto, file: Express.Multer.File) {
     try {
+      if (file) {
+        const exs = v4();
+        const image = await this.upload(file, exs);
+        const travel = await this.travelRepo.update(
+          { ...travelDto, image },
+          { where: { id }, returning: true },
+        );
+        return travel[1][0];
+      }
       const travel = await this.travelRepo.update(travelDto, {
         where: { id },
         returning: true,

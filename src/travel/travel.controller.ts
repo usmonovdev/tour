@@ -93,10 +93,57 @@ export class TravelController {
   }
 
   @ApiOperation({ summary: 'update travel package' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        from_uz: {
+          type: 'string',
+        },
+        from_ru: {
+          type: 'string',
+        },
+        where_uz: {
+          type: 'string',
+        },
+        where_ru: {
+          type: 'string',
+        },
+        description_uz: {
+          type: 'string',
+        },
+        description_ru: {
+          type: 'string',
+        },
+        fly_date: {
+          type: 'Date',
+        },
+        days: {
+          type: 'number',
+        },
+        price: {
+          type: 'number',
+        },
+        type: {
+          type: 'string',
+        },
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @UseGuards(AuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() travelDto: TravelDto) {
-    return this.travelService.update(id, travelDto);
+  @UseInterceptors(FileInterceptor('file'))
+  update(
+    @Param('id') id: string,
+    @Body() travelDto: TravelDto,
+    @UploadedFile('file') file: Express.Multer.File,
+  ) {
+    return this.travelService.update(id, travelDto, file);
   }
 
   @ApiOperation({ summary: 'delete travel package' })
